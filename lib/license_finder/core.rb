@@ -45,7 +45,7 @@ module LicenseFinder
     def_delegators :decision_applier, :acknowledged, :unapproved, :blacklisted, :any_packages?
 
     def project_name
-      decisions.project_name || config.project_path.basename.to_s
+      config.project_name || decisions.project_name || config.project_path.basename.to_s
     end
 
     def project_path
@@ -91,6 +91,7 @@ module LicenseFinder
       {
         logger: logger,
         project_path: config.project_path,
+        project_name: config.project_name,
         log_directory: File.join(config.log_directory, project_name),
         ignored_groups: decisions.ignored_groups,
         go_full_version: config.go_full_version,

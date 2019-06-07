@@ -62,6 +62,7 @@ module LicenseFinder
       @prepare_no_fail = options[:prepare_no_fail]
       @logger       = options[:logger] || Core.default_logger
       @project_path = options[:project_path]
+      @project_name = options[:project_name]
       @log_directory = options[:log_directory]
       @ignored_groups = options[:ignored_groups]
     end
@@ -112,7 +113,7 @@ module LicenseFinder
 
     private
 
-    attr_reader :logger, :project_path
+    attr_reader :logger, :project_path, :project_name
 
     def log_errors(stderr)
       logger.info self.class.prepare_command, 'did not succeed.', color: :red

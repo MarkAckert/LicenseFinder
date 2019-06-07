@@ -21,6 +21,32 @@ module LicenseFinder
         .sort_by { |_, group| -group.size }
     end
 
+    def markdown_link_to_repo(dependency) 
+      if dependency.repository && !dependency.repository.empty?
+        gen_md(dependency.name.split.join(" "), dependency.repository)
+      elsif dependency.homepage && !dependency.homepage.empty?
+        gen_md(dependency.name.split.join(" "), dependency.homepage)
+      else
+        dependency.name.split.join(" ")
+      end
+    end
+
+    def markdown_link_to_license(dependency) 
+      dependency.licenses.map { |l| link_to_md(l) }.join(', ')
+    end
+
+    def link_to_md(license)
+      if license.url && !license.url.empty?
+        gen_md(license.name.split.join(" "), license.url.split.join(" "))
+      else
+        license.name.split.join(" ")
+      end
+    end
+
+    def gen_md(text, link = "##{text}")
+      %([#{text}]\(#{link}\))
+    end
+
     def link_to_license(license)
       link_to_maybe license.name, license.url
     end
@@ -53,6 +79,10 @@ module LicenseFinder
       result = "v#{dependency.version}"
       result << " (#{dependency.groups.join(', ')})" if dependency.groups.any?
       result
+    end
+
+    def project_official(projectName) 
+        projectName
     end
   end
 end

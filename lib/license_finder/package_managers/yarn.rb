@@ -9,7 +9,7 @@ module LicenseFinder
     end
 
     def current_packages
-      cmd = "#{Yarn::SHELL_COMMAND}#{production_flag}"
+      cmd = "#{Yarn::SHELL_COMMAND} #{production_flag}"
       suffix = " --cwd #{project_path}" unless project_path.nil?
       cmd += suffix unless suffix.nil?
 
@@ -39,7 +39,7 @@ module LicenseFinder
     end
 
     def prepare
-      prep_cmd = "#{Yarn.prepare_command}#{production_flag}"
+      prep_cmd = "#{Yarn.prepare_command} #{production_flag}"
       _stdout, stderr, status = Dir.chdir(project_path) { Cmd.run(prep_cmd) }
       return if status.success?
 
@@ -72,8 +72,21 @@ module LicenseFinder
       valid_packages = filter_yarn_internal_package(packages)
 
       valid_packages.map do |package_hash|
-        YarnPackage.new(package_hash['Name'], package_hash['Version'], spec_licenses: [package_hash['License']],
-                                                                       homepage: package_hash['VendorUrl'])
+        repository_url = package_hash['URL']
+        package_name = package_hash['Name']
+	# Zowe specific workarounds
+        puts package_hash['Name'] + " : " + repository_url
+        if repository_url == "Unknown" and not package_name.include? "zowe" 
+          repository_url = "https://www.npmjs.com/package/#{package_name}"
+        elsif repository_url.include? "github.com"
+          repository_url = "https://www.github.com/" + repository_url.split(/github\.com./)[1]
+          if repository_url.include? "gizafoundation"
+            repository_url = repository_url.sub("gizafoundation", "zowe")
+          end
+        end
+        YarnPackage.new(package_name, package_hash['Version'], spec_licenses: [package_hash['License']],
+                                                                       homepage: package_hash['VendorUrl'],
+                                                                       repository: repository_url)                                                              
       end
     end
 

@@ -17,6 +17,7 @@ module LicenseFinder
         'text' => TextReport,
         'html' => HtmlReport,
         'markdown' => MarkdownReport,
+        'markdown_table' => MarkdownTableReport,
         'csv' => CsvReport,
         'xml' => XmlReport,
         'json' => JsonReport
@@ -170,6 +171,10 @@ module LicenseFinder
         raise "Project path '#{config.project_path}' does not exist!" unless config.valid_project_path?
       end
 
+      def check_valid_project_name
+        raise "Project Name '#{config.project_name}' must be a valid string!" unless config.valid_project_name?
+      end
+
       def aggregate_paths
         check_valid_project_path
         aggregate_paths = config.aggregate_paths
@@ -190,7 +195,7 @@ module LicenseFinder
       def report_of(content)
         report = FORMATS[config.format] || FORMATS['text']
         report = MergedReport if report == CsvReport && config.aggregate_paths
-        report.of(content, columns: config.columns, project_name: decisions.project_name || config.project_path.basename.to_s)
+        report.of(content, columns: config.columns, project_name: config.project_name || decisions.project_name || config.project_path.basename.to_s)
       end
 
       def save?
