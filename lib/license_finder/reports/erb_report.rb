@@ -22,10 +22,10 @@ module LicenseFinder
     end
 
     def markdown_link_to_repo(dependency) 
-      if dependency.repository && !dependency.repository.empty?
-        gen_md(dependency.name.split.join(" "), dependency.repository)
-      elsif dependency.homepage && !dependency.homepage.empty?
+      if dependency.homepage && !dependency.homepage.empty?
         gen_md(dependency.name.split.join(" "), dependency.homepage)
+      elsif dependency.repository && !dependency.repository.empty?
+        gen_md(dependency.name.split.join(" "), dependency.repository)
       else
         dependency.name.split.join(" ")
       end

@@ -72,10 +72,9 @@ module LicenseFinder
       valid_packages = filter_yarn_internal_package(packages)
 
       valid_packages.map do |package_hash|
-        repository_url = package_hash['URL']
+        repository_url = package_hash['VendorUrl']
         package_name = package_hash['Name']
 	# Zowe specific workarounds
-        puts package_hash['Name'] + " : " + repository_url
         if repository_url == "Unknown" and not package_name.include? "zowe" 
           repository_url = "https://www.npmjs.com/package/#{package_name}"
         elsif repository_url.include? "github.com"
@@ -85,8 +84,7 @@ module LicenseFinder
           end
         end
         YarnPackage.new(package_name, package_hash['Version'], spec_licenses: [package_hash['License']],
-                                                                       homepage: package_hash['VendorUrl'],
-                                                                       repository: repository_url)                                                              
+                                                                       homepage: repository_url)                                                              
       end
     end
 
